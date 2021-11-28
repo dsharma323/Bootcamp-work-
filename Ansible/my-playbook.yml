@@ -1,0 +1,36 @@
+---
+  - name: My first playbook
+    hosts: webservers
+    become: true
+    tasks:
+
+
+    - name: Install docker.io
+      apt:
+        update_cache: yes
+        name: docker.io
+        state: present
+
+    - name: Install python3-pip
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install docker
+      pip:
+        name: docker
+
+    - name: Install docker container cyberxsecurity/dvwa
+      community.docker.docker_container:
+        name: DVWA
+        image: cyberxsecurity/dvwa
+        state: started
+        restart_policy: always
+        ports:
+        # publish port 80 container to port 80 on host
+        - "80:80"
+
+    - name: Systemd used to restart
+      ansible.builtin.systemd:
+        name: docker
+        enabled: yes
